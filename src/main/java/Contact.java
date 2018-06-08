@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface Contact {
 
+    String getContactType();
+
     String serialize();
 
 //    Contact deSerialize(String str);

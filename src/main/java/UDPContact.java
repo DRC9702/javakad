@@ -10,21 +10,26 @@ public class UDPContact implements Contact {
 
     private String contactType;
     private BitSet nodeID;
-    private String ip;
+    private String host;
     private int port;
     private JSONObject json;
 
-    public UDPContact(BitSet nodeID, String ip, int port){
+    public UDPContact(BitSet nodeID, String host, int port){
         this.contactType = "UDP";
         this.nodeID = nodeID;
-        this.ip = ip;
+        this.host = host;
         this.port = port;
 
         this.json = new JSONObject();
         json.put("contactType", this.contactType);
         json.put("nodeID", this.nodeID);
-        json.put("ip", this.ip);
+        json.put("host", this.host);
         json.put("port", this.port);
+    }
+
+    @Override
+    public String getContactType() {
+        return contactType;
     }
 
     @Override
@@ -32,8 +37,8 @@ public class UDPContact implements Contact {
         return null;
     }
 
-    public String getIp() {
-        return ip;
+    public String getHost() {
+        return host;
     }
 
     public int getPort() {
@@ -50,7 +55,7 @@ public class UDPContact implements Contact {
         try {
             JSONObject json = (JSONObject) jsonParser.parse(str);
             if(((String)json.get("contactType")).equals("UDP"))
-                return new UDPContact((BitSet)json.get("nodeID"),(String)json.get("ip"),(int)json.get("port"));
+                return new UDPContact((BitSet)json.get("nodeID"),(String)json.get("host"),(int)json.get("port"));
             else
                 throw new IllegalArgumentException("Invalid String Passed In: " + str);
         } catch(ParseException pe){

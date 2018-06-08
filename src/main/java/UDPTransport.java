@@ -1,31 +1,37 @@
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.util.Base64;
 import java.util.BitSet;
 
 public class UDPTransport extends AbstractTransport{
 
     DatagramSocket datagramSocket;
+    final static int MAX_RECV_LENGTH = 256;
 
-    public UDPTransport(String host, int port) throws SocketException {
-        InetSocketAddress inetSocketAddress = InetSocketAddress.createUnresolved(host,port);
-        this.datagramSocket = new DatagramSocket(inetSocketAddress);
-
+    public UDPTransport(String host, int port){
+        try {
+            InetAddress inetAddress = InetAddress.getByName(host);
+            this.datagramSocket = new DatagramSocket(port,inetAddress);
+        } catch (UnknownHostException | SocketException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    void write(BitSet targetID, byte[] buffer) {
+    void write(Contact contact, byte[] buffer) {
+        if(!contact.getContactType().equals("UDP") || !(contact instanceof UDPContact))
+            throw new IllegalArgumentException("Invalid Contact Type Fed into UDPTransport:" + contact.getContactType());
+        UDPContact udpContact = (UDPContact) contact;
+
         new Thread(new Runnable() {
             public void run()
             {
                 System.out.println("Sending Pre-Encoded: " + buffer.length);
                 byte[] encodedBuffer = Base64.getEncoder().encode(buffer);
                 System.out.println("Sending Encoded: " + buffer.length);
-                DatagramPacket datagramPacket = new DatagramPacket(encodedBuffer,encodedBuffer.length);
                 try {
+                    InetAddress inetAddress = InetAddress.getByName(udpContact.getHost());
+                    DatagramPacket datagramPacket = new DatagramPacket(encodedBuffer,encodedBuffer.length, inetAddress, udpContact.getPort());
                     datagramSocket.send(datagramPacket);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -36,16 +42,14 @@ public class UDPTransport extends AbstractTransport{
 
     @Override
     void read() {
-        byte[] encodedBuffer = new byte[256];
-        DatagramPacket datagramPacket = new DatagramPacket(encodedBuffer,encodedBuffer.length);
+        DatagramPacket datagramPacket = new DatagramPacket(new byte[MAX_RECV_LENGTH],MAX_RECV_LENGTH);
         try {
             datagramSocket.receive(datagramPacket);
-            encodedBuffer = datagramPacket.getData();
+            byte[] encodedBuffer = new byte[datagramPacket.getLength()];
+            System.arraycopy(datagramPacket.getData(), 0, encodedBuffer, 0, datagramPacket.getLength());
             System.out.println("Receiving Pre-Decoded: " + encodedBuffer.length);
             byte[] decodedBuffer = Base64.getDecoder().decode(encodedBuffer);
             System.out.println("Receiving Decoded: " + decodedBuffer.length);
-//            String receivedMsg = new String(decodedBuffer, 0, decodedBuffer.length);
-//            System.out.print("Message Received:" + receivedMsg);
 
             new Thread(new Runnable() {
                 public void run()

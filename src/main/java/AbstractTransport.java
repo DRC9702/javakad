@@ -11,7 +11,7 @@ public abstract class AbstractTransport {
         this.streamListeners.add(streamListener);
     }
 
-    abstract void write(BitSet targetID, byte[] encoding);
+    abstract void write(Contact contact, byte[] encoding);
 
     abstract void read();
 
