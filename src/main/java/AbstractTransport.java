@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.BitSet;
 
-public abstract class AbstractTransport {
+public abstract class AbstractTransport implements Transport{
     //ToDo: Figure out input and output streams in java. This is hard. :/
     //ToDo: Maybe do parallelism?
 
@@ -11,9 +11,9 @@ public abstract class AbstractTransport {
         this.streamListeners.add(streamListener);
     }
 
-    abstract void write(Contact contact, byte[] encoding);
+    public abstract void write(Contact contact, byte[] encoding);
 
-    abstract void read();
+    public abstract void read();
 
-    abstract void listen();
+    public abstract void listen();
 }

@@ -1,6 +1,7 @@
 public class Node extends AbstractNode {
 
     Bucket[] buckets = new Bucket[160];
+    Transport transport;
 
     public Node(){
         super();
@@ -24,6 +25,8 @@ public class Node extends AbstractNode {
 
     private void initializeNode(){
         initializeBuckets();
+        //ToDo: Put in options for other types of transport (default: UDP).
+        this.transport = new UDPTransport("localhost",9702);
     }
 
     private void initializeBuckets(){
@@ -31,6 +34,6 @@ public class Node extends AbstractNode {
             buckets[i] = new Bucket(this.k);
         }
     }
-
+    
 
 }

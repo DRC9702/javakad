@@ -18,7 +18,7 @@ public class UDPTransport extends AbstractTransport{
     }
 
     @Override
-    void write(Contact contact, byte[] buffer) {
+    public void write(Contact contact, byte[] buffer) {
         if(!contact.getContactType().equals("UDP") || !(contact instanceof UDPContact))
             throw new IllegalArgumentException("Invalid Contact Type Fed into UDPTransport:" + contact.getContactType());
         UDPContact udpContact = (UDPContact) contact;
@@ -41,7 +41,7 @@ public class UDPTransport extends AbstractTransport{
     }
 
     @Override
-    void read() {
+    public void read() {
         DatagramPacket datagramPacket = new DatagramPacket(new byte[MAX_RECV_LENGTH],MAX_RECV_LENGTH);
         try {
             datagramSocket.receive(datagramPacket);
@@ -66,7 +66,7 @@ public class UDPTransport extends AbstractTransport{
     }
 
     @Override
-    void listen() {
+    public void listen() {
 
     }
 }
