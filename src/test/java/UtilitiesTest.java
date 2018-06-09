@@ -1,3 +1,4 @@
+import org.json.simple.JSONObject;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -16,8 +17,19 @@ public class UtilitiesTest {
 
     @Test
     public void testDifferentGetRandomBitSet(){
-        BitSet b1 = Utilities.getRandomBitSet(160);
-        BitSet b2 = Utilities.getRandomBitSet(160);
-        assertFalse(b1.equals(b2));
+        for(int i=0; i<100; i++) {
+            BitSet b1 = Utilities.getRandomBitSet(160);
+            BitSet b2 = Utilities.getRandomBitSet(160);
+            assertFalse(b1.equals(b2));
+        }
+    }
+
+    @Test
+    public void testJSONBufferConversion(){
+        JSONObject jsonObject1 = new JSONObject();
+        jsonObject1.put("nodeID",Utilities.getRandomBitSet(160).toString());
+        byte[] buffer = Utilities.jsonObjectToBuffer(jsonObject1);
+        JSONObject jsonObject2 = Utilities.bufferToJSONObject(buffer);
+        assertTrue(jsonObject1.equals(jsonObject2));
     }
 }

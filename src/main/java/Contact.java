@@ -10,7 +10,9 @@ public interface Contact {
 
     String serialize();
 
-//    Contact deSerialize(String str);
+    static Contact deSerialize(String str){
+        throw new RuntimeException("Unimplemented deserialize method.");
+    };
 
     String toString();
 

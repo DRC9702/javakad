@@ -8,13 +8,13 @@ public class UDPContactTest {
     @Test
     public void testConstructor() {
         BitSet nodeID = Utilities.getRandomBitSet(160);
-        UDPContact udpContact = new UDPContact(nodeID,"localhost",9702);
+        UDPContact udpContact = new UDPContact(nodeID,"localhost",9732);
     }
 
     @Test
     public void testContactType() {
         BitSet nodeID = Utilities.getRandomBitSet(160);
-        UDPContact udpContact = new UDPContact(nodeID,"localhost",9702);
+        UDPContact udpContact = new UDPContact(nodeID,"localhost",9732);
         assertEquals(udpContact.getContactType(),"UDP");
     }
 }

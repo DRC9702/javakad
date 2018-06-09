@@ -6,16 +6,20 @@ import static org.junit.Assert.*;
 
 public class UDPTransportTest {
     @Test public void testConstructor() {
-        UDPTransport udpTransport = new UDPTransport("localhost",9702);
+        UDPContact contact = new UDPContact(Utilities.getRandomBitSet(160),"localhost",9722);
+        UDPTransport udpTransport = new UDPTransport(contact);
     }
 
     @Test public void testWrite() {
-        UDPTransport udp1 = new UDPTransport("localhost",9703);
+        UDPContact contact1 = new UDPContact(Utilities.getRandomBitSet(160),"localhost",9723);
+        UDPTransport udp1 = new UDPTransport(contact1);
 
-        UDPContact contact2 = new UDPContact(Utilities.getRandomBitSet(160),"localhost",9704);
-        UDPTransport udp2 = new UDPTransport(contact2.getHost(),contact2.getPort());
+        UDPContact contact2 = new UDPContact(Utilities.getRandomBitSet(160),"localhost",9724);
+        UDPTransport udp2 = new UDPTransport(contact2);
 
-        udp1.write(contact2,"Hello".getBytes());
+        byte[] buffer = Utilities.stringToBuffer("Hello");
+
+        udp1.write(contact2,buffer);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -24,24 +28,28 @@ public class UDPTransportTest {
     }
 
     @Test public void testRead() {
-        UDPTransport udp1 = new UDPTransport("localhost",9705);
+        UDPContact contact1 = new UDPContact(Utilities.getRandomBitSet(160),"localhost",9725);
+        UDPTransport udp1 = new UDPTransport(contact1);
 
-        UDPContact contact2 = new UDPContact(Utilities.getRandomBitSet(160),"localhost",9706);
-        UDPTransport udp2 = new UDPTransport(contact2.getHost(),contact2.getPort());
+        UDPContact contact2 = new UDPContact(Utilities.getRandomBitSet(160),"localhost",9726);
+        UDPTransport udp2 = new UDPTransport(contact2);
 
         final boolean[] gotMsg = {false};
 
         udp2.addStreamListener(new StreamListener() {
             @Override
             public void onDataEvent(byte[] buffer) {
-                String recv = new String(buffer,0,buffer.length);
-                System.out.println("Received Message: " + recv);
-                assertEquals(recv,"Hello");
+                String recvMessage = Utilities.bufferToString(buffer);
+                System.out.println("Received Message: " + recvMessage);
+                assertEquals(recvMessage,"Hello");
                 gotMsg[0] = true;
             }
         });
 
-        udp1.write(contact2,"Hello".getBytes());
+        String sentMessage = "Hello";
+        byte[] sentBuffer = Utilities.stringToBuffer(sentMessage);
+
+        udp1.write(contact2,sentBuffer);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

@@ -10,58 +10,41 @@ public abstract class AbstractNode {
     protected int B = 160;
     protected int k = 20;
 
-    protected int tExpire =86410;
-    protected int tRefresh = 3600;
-    protected int tReplicate = 3600;
-    protected int tRepublish = 86400;
+    final protected int tExpire =86410;
+    final protected int tRefresh = 3600;
+    final protected int tReplicate = 3600;
+    final protected int tRepublish = 86400;
 
-    private BitSet nodeID = new BitSet(160);
+    private Contact contact;
 
     public AbstractNode(){
-        this.setNodeID(Utilities.getRandomBitSet(this.B));
+        this.setContact(new UDPContact(Utilities.getRandomBitSet(this.B)));
+    }
+
+    public AbstractNode(Contact contact){
+        this.setContact(contact);
     }
 
     public AbstractNode(String nodeID){
-        this.setNodeID(nodeID);
+        this.setContact(new UDPContact(Utilities.hexToBitSet(nodeID)));
     }
 
     public AbstractNode(String nodeID, int alpha, int B, int k){
-        this.setNodeID(nodeID);
+        this.setContact(new UDPContact(Utilities.hexToBitSet(nodeID)));
         this.alpha = alpha;
         this.B = B;
         this.k = k;
-    }
-
-    public AbstractNode(String nodeID, int alpha, int B, int k, int tExpire, int tRefresh, int tReplicate, int tRepublish){
-        this.setNodeID(nodeID);
-        this.alpha = alpha;
-        this.B = B;
-        this.k = k;
-        this.tExpire = tExpire;
-        this.tRefresh = tRefresh;
-        this.tReplicate = tReplicate;
-        this.tRepublish = tRepublish;
-    }
-
-    private void setNodeID(BitSet nodeID){
-        this.nodeID = nodeID;
-    }
-
-    private void setNodeID(String hexString){
-        if(hexString.matches("^[a-f0-9]+$") && hexString.length()==40){
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            for(int i = 0; i < hexString.length() - 1; i += 2) {
-                String data = hexString.substring(i, i + 2);
-                bout.write(Integer.parseInt(data, 16));
-            }
-            this.nodeID = BitSet.valueOf(bout.toByteArray());
-        }
-        else{
-            throw new IllegalArgumentException("Invalid NodeID hexString:" + hexString);
-        }
     }
 
     public BitSet getNodeID() {
-        return nodeID;
+        return this.getContact().getNodeID();
+    }
+
+    private void setContact(Contact contact){
+        this.contact = contact;
+    }
+
+    public Contact getContact() {
+        return this.contact;
     }
 }

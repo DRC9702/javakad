@@ -1,7 +1,9 @@
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,13 @@ public class UDPContact implements Contact {
     private int port;
     private JSONObject json;
 
+    public static final String DEFAULT_HOST = "localhost";
+    public static final int DEFAULT_PORT = 9702;
+
+    public UDPContact(BitSet nodeID){
+        this(nodeID,DEFAULT_HOST,DEFAULT_PORT);
+    }
+
     public UDPContact(BitSet nodeID, String host, int port){
         this.contactType = "UDP";
         this.nodeID = nodeID;
@@ -22,7 +31,8 @@ public class UDPContact implements Contact {
 
         this.json = new JSONObject();
         json.put("contactType", this.contactType);
-        json.put("nodeID", this.nodeID);
+
+        json.put("nodeID", Utilities.bitSetToString(this.nodeID));
         json.put("host", this.host);
         json.put("port", this.port);
     }
@@ -34,7 +44,7 @@ public class UDPContact implements Contact {
 
     @Override
     public BitSet getNodeID() {
-        return null;
+        return nodeID;
     }
 
     public String getHost() {
@@ -54,8 +64,13 @@ public class UDPContact implements Contact {
         JSONParser jsonParser = new JSONParser();
         try {
             JSONObject json = (JSONObject) jsonParser.parse(str);
-            if(((String)json.get("contactType")).equals("UDP"))
-                return new UDPContact((BitSet)json.get("nodeID"),(String)json.get("host"),(int)json.get("port"));
+            if(((String)json.get("contactType")).equals("UDP")) {
+                String hex = (String) json.get("nodeID");
+                BitSet nodeID = Utilities.hexToBitSet(hex);
+                String host = (String) json.get("host");
+                int port = ((Long)json.get("port")).intValue();
+                return new UDPContact(nodeID, (String) host, port);
+            }
             else
                 throw new IllegalArgumentException("Invalid String Passed In: " + str);
         } catch(ParseException pe){
